@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>English — первые слова</title>
+
+<!-- PWA-настройки -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0984e3">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="English">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    overflow-y: auto;
+  }
+  body {
+    font-family: 'Comic Sans MS', system-ui, sans-serif;
+    background: linear-gradient(160deg, #74b9ff, #a29bfe);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px;
+  }
+  .card {
+    background: white;
+    border-radius: 22px;
+    padding: 14px 16px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    text-align: center;
+  }
+  h1 { font-size: 17px; color: #0984e3; margin-bottom: 8px; }
+
+  .lessons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .lessons button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 14px;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: #dfe6e9;
+    color: #636e72;
+    cursor: pointer;
+    transition: all 0.15s;
+    touch-action: manipulation;
+  }
+  .lessons button.active {
+    background: #0984e3;
+    color: white;
+    border-color: #0652dd;
+  }
+  .lessons button:active { transform: scale(0.97); }
+
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .modes button {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 4px;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: #dfe6e9;
+    color: #636e72;
+    cursor: pointer;
+    transition: all 0.15s;
+    touch-action: manipulation;
+  }
+  .modes button.active {
+    background: #74b9ff;
+    color: white;
+    border-color: #0984e3;
+  }
+  .modes button:active { transform: scale(0.97); }
+
+  .scene {
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .big-letter {
+    font-size: 96px;
+    font-weight: bold;
+    letter-spacing: 8px;
+    color: #2d3436;
+    line-height: 1;
+  }
+  .big-letter .upper { color: #0984e3; }
+  .big-letter .lower { color: #e17055; }
+
+  .example {
+    font-size: 20px;
+    color: #636e72;
+    margin-top: 4px;
+  }
+  .example .word {
+    font-weight: bold;
+    color: #2d3436;
+    font-size: 28px;
+  }
+  .example .emoji { font-size: 52px; display: block; margin: 8px 0; }
+
+  .word-display {
+    font-size: 56px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    line-height: 1.2;
+  }
+  .word-display .letter-c { color: #0984e3; }
+  .word-display .letter-a { color: #d63031; }
+  .word-display .letter-t { color: #0984e3; }
+  .word-display .letter-f { color: #0984e3; }
+
+  /* КАРТИНКА слова — вместо эмодзи */
+  .word-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    display: block;
+    margin: 4px auto;
+  }
+
+  .word-translation {
+    font-size: 22px;
+    color: #636e72;
+    font-weight: bold;
+  }
+
+  .speak-btn {
+    font-family: inherit;
+    font-size: 22px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 14px;
+    background: #74b9ff;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 4px;
+    touch-action: manipulation;
+  }
+  .speak-btn:active { transform: scale(0.96); background: #0984e3; }
+
+  .pair-target {
+    font-size: 96px;
+    font-weight: bold;
+    color: #0984e3;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .pair-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .pair-options button {
+    font-family: inherit;
+    font-size: 48px;
+    font-weight: bold;
+    width: 78px;
+    height: 78px;
+    border: 3px solid #dfe6e9;
+    border-radius: 16px;
+    background: #fff;
+    color: #2d3436;
+    cursor: pointer;
+    transition: all 0.15s;
+    touch-action: manipulation;
+  }
+  .pair-options button:active { transform: scale(0.94); }
+  .pair-options button.correct {
+    background: #d4f5e9;
+    border-color: #00b894;
+    color: #00b894;
+    animation: pulse 0.5s;
+  }
+  .pair-options button.wrong {
+    background: #ffe0e0;
+    border-color: #d63031;
+    color: #d63031;
+    animation: shake 0.4s;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* Картинка в "Собери слово" */
+  .build-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 8px;
+  }
+
+  .build-slots {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 12px 0;
+  }
+  .slot {
+    width: 68px;
+    height: 78px;
+    border: 3px dashed #b2bec3;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: bold;
+    color: #2d3436;
+    background: #f8f9fa;
+    transition: all 0.2s;
+  }
+  .slot.filled {
+    border-style: solid;
+    border-color: #0984e3;
+    background: #e7f0ff;
+  }
+  .slot.correct {
+    border-color: #00b894;
+    background: #d4f5e9;
+    color: #00b894;
+  }
+  .slot.wrong {
+    border-color: #d63031;
+    background: #ffe0e0;
+    color: #d63031;
+  }
+
+  .build-letters {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .build-letters button {
+    font-family: inherit;
+    font-size: 42px;
+    font-weight: bold;
+    width: 66px;
+    height: 74px;
+    border: 3px solid #dfe6e9;
+    border-radius: 12px;
+    background: #fff;
+    color: #2d3436;
+    cursor: pointer;
+    transition: all 0.15s;
+    touch-action: manipulation;
+  }
+  .build-letters button:active { transform: scale(0.94); }
+  .build-letters button.used {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  .feedback {
+    font-size: 20px;
+    min-height: 28px;
+    margin: 8px 0;
+    font-weight: bold;
+  }
+  .feedback.ok { color: #00b894; }
+  .feedback.no { color: #e17055; }
+
+  .next-btn {
+    font-family: inherit;
+    font-size: 18px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 14px;
+    background: #a29bfe;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+    touch-action: manipulation;
+  }
+  .next-btn:active { transform: scale(0.96); }
+
+  @media (max-height: 700px) {
+    .big-letter { font-size: 72px; }
+    .word-display { font-size: 44px; }
+    .word-image { width: 160px; height: 160px; }
+    .build-image { width: 140px; height: 140px; }
+    .pair-target { font-size: 72px; }
+    .pair-options button { font-size: 36px; width: 60px; height: 60px; }
+    .slot { width: 54px; height: 62px; font-size: 34px; }
+    .build-letters button { font-size: 34px; width: 54px; height: 62px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>English — первые слова</h1>
+
+  <div class="lessons" id="lessonsBar"></div>
+
+  <div class="modes">
+    <button id="modeLetters" class="active" onclick="setMode('letters')">🅰️ Буквы</button>
+    <button id="modePair" onclick="setMode('pair')">🎯 Найди пару</button>
+    <button id="modeWords" onclick="setMode('words')">📖 Слова</button>
+    <button id="modeBuild" onclick="setMode('build')">🧩 Собери слово</button>
+  </div>
+
+  <div class="scene" id="scene"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+// ============ ДАННЫЕ ПО УРОКАМ ============
+
+const LESSONS = [
+  {
+    title: "Урок 1",
+    letters: [
+      { upper: 'A', lower: 'a', example: 'apple', emoji: '🍎', translation: 'яблоко', mp3: null },
+      { upper: 'C', lower: 'c', example: 'cat', emoji: '🐱', translation: 'кот', mp3: 'cat.mp3' },
+      { upper: 'T', lower: 't', example: 'tree', emoji: '🌳', translation: 'дерево', mp3: null },
+      { upper: 'F', lower: 'f', example: 'fat', emoji: '🦛', translation: 'упитанный', mp3: 'fat.mp3' }
+    ],
+    words: [
+      { text: 'cat', image: 'cat.png', translation: 'кот', mp3: 'cat.mp3' },
+      { text: 'fat', image: 'fat.png', translation: 'упитанный', mp3: 'fat.mp3' }
+    ]
+  }
+];
+
+// ============ СОСТОЯНИЕ ============
+
+let lessonIndex = 0;
+let mode = 'letters';
+let letterIndex = 0;
+let wordIndex = 0;
+let pairTarget = null;
+let pairAnswered = false;
+let buildWord = null;
+let buildSlots = [];
+let buildAvailable = [];
+let currentAudio = null;
+
+const scene = document.getElementById('scene');
+const feedback = document.getElementById('feedback');
+
+// ============ ЗВУК ============
+
+function playSound(file) {
+  if (!file) return;
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  currentAudio = new Audio(file);
+  currentAudio.play().catch(e => console.log('Audio error:', e));
+}
+
+// ============ УРОКИ ============
+
+function renderLessonsBar() {
+  const bar = document.getElementById('lessonsBar');
+  bar.innerHTML = LESSONS.map((L, i) =>
+    `<button class="${i === lessonIndex ? 'active' : ''}" onclick="setLesson(${i})">${L.title}</button>`
+  ).join('');
+}
+
+function setLesson(i) {
+  lessonIndex = i;
+  letterIndex = 0;
+  wordIndex = 0;
+  renderLessonsBar();
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  if (mode === 'letters') renderLetters();
+  if (mode === 'pair') renderPair();
+  if (mode === 'words') renderWords();
+  if (mode === 'build') renderBuild();
+}
+
+function getCurrentLesson() {
+  return LESSONS[lessonIndex];
+}
+
+// ============ МЕНЮ РЕЖИМОВ ============
+
+function setMode(m) {
+  mode = m;
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  document.getElementById('modeLetters').classList.toggle('active', m === 'letters');
+  document.getElementById('modePair').classList.toggle('active', m === 'pair');
+  document.getElementById('modeWords').classList.toggle('active', m === 'words');
+  document.getElementById('modeBuild').classList.toggle('active', m === 'build');
+
+  if (m === 'letters') { letterIndex = 0; renderLetters(); }
+  if (m === 'pair') { renderPair(); }
+  if (m === 'words') { wordIndex = 0; renderWords(); }
+  if (m === 'build') { renderBuild(); }
+}
+
+// ============ РЕЖИМ 1: БУКВЫ ============
+
+function renderLetters() {
+  const lesson = getCurrentLesson();
+  const L = lesson.letters[letterIndex];
+  scene.innerHTML = `
+    <div class="big-letter">
+      <span class="upper">${L.upper}</span>
+      <span class="lower">${L.lower}</span>
+    </div>
+    <div class="example">
+      <span class="emoji">${L.emoji}</span>
+      <span class="word">${L.example}</span>
+      <br>
+      <span style="font-size:16px;color:#888;">${L.translation}</span>
+    </div>
+    ${L.mp3 ? '<button class="speak-btn" onclick="playSound(\'' + L.mp3 + '\')">🔊 Послушать</button>' : ''}
+    <button class="next-btn" onclick="nextLetter()">Дальше →</button>
+  `;
+}
+
+function nextLetter() {
+  const lesson = getCurrentLesson();
+  letterIndex = (letterIndex + 1) % lesson.letters.length;
+  renderLetters();
+}
+
+// ============ РЕЖИМ 2: НАЙДИ ПАРУ ============
+
+function renderPair() {
+  const lesson = getCurrentLesson();
+  pairTarget = lesson.letters[Math.floor(Math.random() * lesson.letters.length)];
+  pairAnswered = false;
+
+  const options = lesson.letters.map(L => L.lower).sort(() => Math.random() - 0.5);
+
+  scene.innerHTML = `
+    <div style="font-size:18px;color:#888;margin-bottom:4px;">Найди маленькую букву:</div>
+    <div class="pair-target">${pairTarget.upper}</div>
+    <div class="pair-options" id="pairOptions">
+      ${options.map(l => `<button onclick="checkPair('${l}', this)">${l}</button>`).join('')}
+    </div>
+  `;
+}
+
+function checkPair(letter, btn) {
+  if (pairAnswered) return;
+  if (letter === pairTarget.lower) {
+    pairAnswered = true;
+    btn.classList.add('correct');
+    feedback.textContent = 'Молодец! 🎉';
+    feedback.className = 'feedback ok';
+    if (pairTarget.mp3) playSound(pairTarget.mp3);
+    setTimeout(renderPair, 1200);
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = 'Попробуй ещё 🙂';
+    feedback.className = 'feedback no';
+    setTimeout(() => btn.classList.remove('wrong'), 700);
+  }
+}
+
+// ============ РЕЖИМ 3: СЛОВА ============
+
+function renderWords() {
+  const lesson = getCurrentLesson();
+  const W = lesson.words[wordIndex];
+  scene.innerHTML = `
+    <div class="word-display">
+      ${W.text.split('').map(ch => `<span class="letter-${ch}">${ch}</span>`).join('')}
+    </div>
+    <img src="${W.image}" class="word-image" alt="${W.text}">
+    <div class="word-translation">${W.translation}</div>
+    <button class="speak-btn" onclick="playSound('${W.mp3}')">🔊 Послушать</button>
+    <button class="next-btn" onclick="nextWord()">Дальше →</button>
+  `;
+}
+
+function nextWord() {
+  const lesson = getCurrentLesson();
+  wordIndex = (wordIndex + 1) % lesson.words.length;
+  renderWords();
+}
+
+// ============ РЕЖИМ 4: СОБЕРИ СЛОВО ============
+
+function renderBuild() {
+  const lesson = getCurrentLesson();
+  buildWord = lesson.words[Math.floor(Math.random() * lesson.words.length)];
+  buildSlots = new Array(buildWord.text.length).fill(null);
+
+  buildAvailable = buildWord.text.split('').map((ch, i) => ({ ch, id: i }));
+  buildAvailable.sort(() => Math.random() - 0.5);
+
+  drawBuild();
+}
+
+function drawBuild() {
+  scene.innerHTML = `
+    <img src="${buildWord.image}" class="build-image" alt="${buildWord.text}">
+    <div class="build-slots">
+      ${buildSlots.map((ch, i) =>
+        `<div class="slot ${ch ? 'filled' : ''}" data-slot="${i}">${ch || ''}</div>`
+      ).join('')}
+    </div>
+    <div class="build-letters">
+      ${buildAvailable.map((item, i) =>
+        `<button ${item.used ? 'class="used"' : ''} onclick="placeLetter(${i})">${item.ch}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function placeLetter(availIndex) {
+  if (availIndex >= buildAvailable.length) return;
+  const item = buildAvailable[availIndex];
+  if (item.used) return;
+
+  const slotIndex = buildSlots.findIndex(s => s === null);
+  if (slotIndex === -1) return;
+
+  buildSlots[slotIndex] = item.ch;
+  item.used = true;
+
+  if (buildSlots.every(s => s !== null)) {
+    const assembled = buildSlots.join('');
+    if (assembled === buildWord.text) {
+      feedback.textContent = 'Молодец! 🎉';
+      feedback.className = 'feedback ok';
+      playSound(buildWord.mp3);
+      drawBuild();
+      setTimeout(() => {
+        document.querySelectorAll('.slot').forEach(el => el.classList.add('correct'));
+      }, 50);
+      setTimeout(() => {
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        renderBuild();
+      }, 2200);
+      return;
+    } else {
+      feedback.textContent = 'Попробуй ещё 🙂';
+      feedback.className = 'feedback no';
+      drawBuild();
+      setTimeout(() => {
+        document.querySelectorAll('.slot').forEach(el => el.classList.add('wrong'));
+      }, 50);
+      setTimeout(() => {
+        buildSlots = new Array(buildWord.text.length).fill(null);
+        buildAvailable.forEach(item => item.used = false);
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        drawBuild();
+      }, 1200);
+      return;
+    }
+  }
+  drawBuild();
+}
+
+// ============ СТАРТ ============
+
+renderLessonsBar();
+renderLetters();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+</body>
+</html>
