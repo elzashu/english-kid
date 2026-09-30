@@ -134,7 +134,6 @@
   .word-display .letter-t { color: #0984e3; }
   .word-display .letter-f { color: #0984e3; }
 
-  /* КАРТИНКА слова — вместо эмодзи */
   .word-image {
     width: 200px;
     height: 200px;
@@ -217,7 +216,6 @@
     75% { transform: translateX(6px); }
   }
 
-  /* Картинка в "Собери слово" */
   .build-image {
     width: 180px;
     height: 180px;
@@ -484,7 +482,7 @@ function checkPair(letter, btn) {
     btn.classList.add('correct');
     feedback.textContent = 'Молодец! 🎉';
     feedback.className = 'feedback ok';
-    if (pairTarget.mp3) playSound(pairTarget.mp3);
+    // Звук убран — в этом режиме он не нужен
     setTimeout(renderPair, 1200);
   } else {
     btn.classList.add('wrong');
